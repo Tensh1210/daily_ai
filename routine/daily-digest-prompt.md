@@ -87,20 +87,23 @@ Rules:
 - **Parse/fetch failures**: never abort; surface them in the footer.
 
 ## Step 7 — Email
-Deliver the digest via Gmail MCP `create_draft` (`mcp__claude_ai_Gmail__create_draft`):
-- To: `phamthanhtin1210@gmail.com`
-- Subject: `AI Daily Digest — YYYY-MM-DD`
-- Body: a light email — the two curated sections (Product & Breakthroughs +
-  Research Top Picks) + the OK/failed source counts. Point to the repo file for the
-  full found list (keeps the email small).
+Prefer **SMTP send** (fully unattended) and fall back to a **Gmail draft** if SMTP
+is not configured. Subject: `AI Daily Digest — YYYY-MM-DD`. Recipient:
+`phamthanhtin1210@gmail.com`.
 
-> **Connector limitation:** this Gmail MCP exposes `create_draft` only — it has **no
-> send capability**. The routine creates a draft you must send manually. For fully
-> unattended delivery, switch to stdlib SMTP (`scripts/send_email.py`, app-password
-> from env) — see README "Email delivery".
-
-If Gmail MCP is unavailable in this run, skip and add a footer note
-`_Email skipped: Gmail MCP unavailable._` Do not fail the run.
+1. Attempt SMTP send of the digest file:
+   ```
+   python scripts/send_email.py --subject "AI Daily Digest — YYYY-MM-DD" --body-file digests/digest-YYYY-MM-DD.md
+   ```
+   - Exit `0` → email sent; done.
+   - Exit `2` → SMTP not configured (no `DIGEST_SMTP_USER`/`DIGEST_SMTP_PASSWORD`
+     env) → go to step 2 (draft fallback).
+   - Exit `1` → SMTP error → note it in the digest footer, then go to step 2.
+2. Fallback — Gmail MCP `create_draft` (`mcp__Gmail__create_draft`):
+   To `phamthanhtin1210@gmail.com`, same subject, body = the two curated sections +
+   OK/failed source counts (point to the repo file for the full list). Note: this
+   connector can only draft, not send.
+3. If neither path works, add a footer note `_Email skipped._` Never fail the run.
 
 ## Step 8 — Persist
 Persistence keeps cross-day dedup working: today's `seen-ids.json` + digest MUST
