@@ -87,33 +87,45 @@ Windows Task Scheduler triggers the headless `claude` CLI on this machine.
 2. Commit-back is local (no remote needed); state stays on disk.
 3. Con: the machine must be powered on at the scheduled time.
 
-## Email delivery
+## Delivery
 
-The routine sends the digest via **SMTP** (`scripts/send_email.py`, stdlib `smtplib`)
-for fully unattended delivery, and falls back to a **Gmail MCP draft** if SMTP is not
-configured (the Gmail connector can draft but not send).
+**Primary channel: Discord webhook** (`scripts/send_discord.py`, stdlib). Simplest to
+run unattended — one secret, no OAuth. The routine posts a compact message (the two
+curated sections + a link to the full digest on GitHub); long bodies auto-split under
+Discord's 2000-char limit.
 
-Configure SMTP via environment variables (never committed):
+Get a webhook: Discord → Server Settings → Integrations → Webhooks → New Webhook →
+copy URL. Then set the env var:
+
+| Var | Notes |
+|-----|-------|
+| `DISCORD_WEBHOOK_URL` | full `https://discord.com/api/webhooks/...` URL (secret) |
+| `DISCORD_USERNAME` | optional display-name override |
+
+Test locally (PowerShell):
+```
+$env:DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/…"
+python scripts/send_discord.py --body "AI Daily Digest — test"
+```
+
+**For the cloud routine:** add `DISCORD_WEBHOOK_URL` as an environment secret in your
+Claude Code environment settings (https://claude.ai/code) so the cloud sandbox can
+read it. Without it the routine notes the skip and continues.
+
+### Email (kept, currently disabled)
+
+`scripts/send_email.py` (SMTP, stdlib `smtplib`) and the Gmail MCP `create_draft`
+fallback remain in the repo but are **not called** by the routine right now. To
+re-enable email, add a `send_email.py` step back into `routine/daily-digest-prompt.md`
+and configure these env vars:
 
 | Var | Default | Notes |
 |-----|---------|-------|
 | `DIGEST_SMTP_HOST` | `smtp.gmail.com` | |
 | `DIGEST_SMTP_PORT` | `587` | STARTTLS |
 | `DIGEST_SMTP_USER` | — | sender Gmail address |
-| `DIGEST_SMTP_PASSWORD` | — | Gmail **App password** (Google account → Security → App passwords; requires 2-Step Verification) |
+| `DIGEST_SMTP_PASSWORD` | — | Gmail **App password** (requires 2-Step Verification) |
 | `DIGEST_EMAIL_TO` | `phamthanhtin1210@gmail.com` | recipient |
-
-Test locally:
-```
-set DIGEST_SMTP_USER=you@gmail.com        # PowerShell: $env:DIGEST_SMTP_USER="you@gmail.com"
-set DIGEST_SMTP_PASSWORD=your-app-password
-python scripts/send_email.py --subject "AI Daily Digest — test" --body "hello"
-```
-
-**For the cloud routine:** add `DIGEST_SMTP_USER` + `DIGEST_SMTP_PASSWORD` as
-environment secrets in your Claude Code environment settings
-(https://claude.ai/code) so the cloud sandbox can read them. Without them the routine
-falls back to creating a Gmail draft.
 
 ## State & persistence
 
