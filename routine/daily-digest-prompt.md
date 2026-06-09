@@ -87,20 +87,26 @@ Rules:
 - **Parse/fetch failures**: never abort; surface them in the footer.
 
 ## Step 7 — Deliver (Discord)
-Primary channel is **Discord webhook**. Post a COMPACT message (not the full found
-list) — the two curated sections + source counts + a link to the full digest on
-GitHub. Build that compact body (e.g. write it to `state/_discord-body.md`, which is
-gitignored) and post it:
+Primary channel is **Discord webhook**. Post a CONDENSED body (medium length, ~2
+messages — NOT the full found list, NOT the full per-item summaries). Build it into
+`state/_discord-body.md` (gitignored) then post:
 
 ```
 python scripts/send_discord.py --body-file state/_discord-body.md
 ```
 
-The compact body should contain:
+Condensed body format (keep it tight — target < 3500 chars total):
 - `# AI Daily Digest — YYYY-MM-DD`
-- the `🚀 Product & Breakthroughs` and `📄 Research Papers — Top Picks` sections,
-- `🗂 Full list: https://github.com/Tensh1210/daily_ai/blob/main/digests/digest-YYYY-MM-DD.md`,
-- `_Sources OK: N · Failed: M_` (list failed sources).
+- `## 🚀 Product & Breakthroughs` — each news item: `- **Title** — lab · <link>` then a
+  single short sentence.
+- `## 📄 Research — Top Picks` —
+  - the **top 6** picks: `- **Title** · <link>` + one short "why it matters" line;
+  - the **remaining picks (7..top_n)**: title + link only, one line each, no summary.
+- `🗂 Full digest: https://github.com/Tensh1210/daily_ai/blob/main/digests/digest-YYYY-MM-DD.md`
+- `_Sources OK: N · Failed: M_` (list failed sources if any).
+
+The full summaries + the complete found list live in the committed digest file, not
+in the Discord post.
 
 Exit codes: `0` posted · `2` not configured (no `DISCORD_WEBHOOK_URL` env) · `1`
 failed. On `1`/`2`, add a footer note to the digest (`_Discord delivery skipped._`)
