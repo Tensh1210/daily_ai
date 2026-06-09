@@ -63,29 +63,36 @@ RSS and Atom are auto-detected. Microsoft Research is omitted (its feed returns 
 
 ## Scheduling
 
-The same scripts/config/prompt are reused regardless of trigger.
+**Active setup: local Windows Task Scheduler + headless `claude` CLI**, daily at
+**13:00 Asia/Saigon**. The CLI runs the full routine (fetch → curate with AI →
+Discord → commit + push) using your Claude Pro plan quota.
 
-### Option A — Cloud `/schedule` (preferred)
+> Why not the Anthropic cloud `/schedule` routine? Its sandbox filters network egress
+> — only GitHub-style domains are reachable, so arXiv/HF/OpenAI/DeepMind fetches and
+> the Discord webhook all return HTTP 403, and the sandbox lacks repo write access.
+> This fetch-many-domains + webhook workload needs unrestricted egress, so it runs
+> locally. (The disabled cloud routine config is kept for reference.)
 
-Runs in Anthropic's cloud at the cron time even when your machine is off.
-**Requires the repo on GitHub** so the routine can commit + push state back (persistence).
+### One-time setup
 
-1. Put this repo on GitHub: `git init`, commit, create a GitHub remote, push.
-2. Register a scheduled routine pointing at `routine/daily-digest-prompt.md`,
-   cron **07:00 Asia/Saigon** daily.
-3. The routine ends by committing `digests/` + `state/seen-ids.json` and pushing.
+1. **Claude CLI logged in** (Pro plan): run `claude` once and `/login`.
+2. **Discord webhook** as a persistent user env var (Command Prompt):
+   ```cmd
+   setx DISCORD_WEBHOOK_URL "https://discord.com/api/webhooks/xxx/yyy"
+   ```
+   (Open a NEW terminal afterwards so the variable is visible.)
+3. **Create the scheduled task** (Command Prompt):
+   ```cmd
+   schtasks /Create /TN "DailyAIDigest" /TR "D:\Project\dailynews\routine\run-local-digest.cmd" /SC DAILY /ST 13:00 /F
+   ```
 
-> Capability caveat (Risk #1/#2): the cloud sandbox must support `git push` back to the
-> repo and the Gmail MCP connector. If either is unavailable, use Option B.
+The task runs `routine/run-local-digest.cmd`, which calls the Claude CLI headless and
+appends output to `state/_run.log` (gitignored). The machine must be on at 13:00.
 
-### Option B — Local (Plan B, fallback)
-
-Windows Task Scheduler triggers the headless `claude` CLI on this machine.
-
-1. Create a daily task at **07:00** (Asia/Saigon) running, from the repo root:
-   `claude -p "$(type routine\daily-digest-prompt.md)"` (or point the CLI at the prompt file).
-2. Commit-back is local (no remote needed); state stays on disk.
-3. Con: the machine must be powered on at the scheduled time.
+Manual run / test any time:
+```cmd
+routine\run-local-digest.cmd
+```
 
 ## Delivery
 
