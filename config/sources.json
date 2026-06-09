@@ -1,0 +1,16 @@
+{
+  "academic": [
+    {"id": "arxiv-cs-cl", "type": "rss", "url": "https://rss.arxiv.org/rss/cs.CL", "label": "arXiv cs.CL", "enabled": true},
+    {"id": "arxiv-cs-ai", "type": "rss", "url": "https://rss.arxiv.org/rss/cs.AI", "label": "arXiv cs.AI", "enabled": true},
+    {"id": "arxiv-cs-ir", "type": "rss", "url": "https://rss.arxiv.org/rss/cs.IR", "label": "arXiv cs.IR", "enabled": true},
+    {"id": "hf-daily-papers", "type": "hf_json", "url": "https://huggingface.co/api/daily_papers", "label": "HF Papers", "enabled": true}
+  ],
+  "news": [
+    {"id": "openai-news", "type": "rss", "url": "https://openai.com/news/rss.xml", "label": "OpenAI News", "enabled": true},
+    {"id": "anthropic-news", "type": "rss", "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml", "label": "Anthropic News", "enabled": true},
+    {"id": "anthropic-eng", "type": "rss", "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_engineering.xml", "label": "Anthropic Engineering", "enabled": true},
+    {"id": "anthropic-research", "type": "rss", "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_research.xml", "label": "Anthropic Research", "enabled": true},
+    {"id": "deepmind", "type": "rss", "url": "https://deepmind.google/blog/rss.xml", "label": "Google DeepMind", "enabled": true},
+    {"id": "meta-ai", "type": "rss", "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_meta_ai.xml", "label": "Meta AI", "enabled": true}
+  ]
+}

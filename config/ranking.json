@@ -1,0 +1,10 @@
+{
+  "top_n": 15,
+  "window_hours": 36,
+  "keyword_weights": {
+    "agent": 4, "mcp": 4, "tool-use": 4, "agent-sdk": 4, "skill": 4, "orchestration": 3,
+    "llm": 2, "reasoning": 2, "rag": 2, "retrieval": 2, "fine-tuning": 2, "long-context": 2,
+    "multimodal": 2, "vision-language": 2, "diffusion": 2, "quantization": 2, "distillation": 2, "inference": 2
+  },
+  "lab_boost": { "openai": 2, "anthropic": 2, "deepmind": 2 }
+}
