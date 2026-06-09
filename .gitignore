@@ -100,4 +100,6 @@ worktrees/
 # --- Daily AI Research Digest ---
 # Transient daily raw fetch output (regenerated each run, do not persist)
 state/raw-*.json
+# Transient scratch files (e.g. compact Discord body)
+state/_*
 # Keep tracked: state/seen-ids.json (dedup persistence) + digests/*.md (history)

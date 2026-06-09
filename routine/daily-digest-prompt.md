@@ -86,24 +86,29 @@ Rules:
   "_No new papers in window._" note in the Research section.
 - **Parse/fetch failures**: never abort; surface them in the footer.
 
-## Step 7 — Email
-Prefer **SMTP send** (fully unattended) and fall back to a **Gmail draft** if SMTP
-is not configured. Subject: `AI Daily Digest — YYYY-MM-DD`. Recipient:
-`phamthanhtin1210@gmail.com`.
+## Step 7 — Deliver (Discord)
+Primary channel is **Discord webhook**. Post a COMPACT message (not the full found
+list) — the two curated sections + source counts + a link to the full digest on
+GitHub. Build that compact body (e.g. write it to `state/_discord-body.md`, which is
+gitignored) and post it:
 
-1. Attempt SMTP send of the digest file:
-   ```
-   python scripts/send_email.py --subject "AI Daily Digest — YYYY-MM-DD" --body-file digests/digest-YYYY-MM-DD.md
-   ```
-   - Exit `0` → email sent; done.
-   - Exit `2` → SMTP not configured (no `DIGEST_SMTP_USER`/`DIGEST_SMTP_PASSWORD`
-     env) → go to step 2 (draft fallback).
-   - Exit `1` → SMTP error → note it in the digest footer, then go to step 2.
-2. Fallback — Gmail MCP `create_draft` (`mcp__Gmail__create_draft`):
-   To `phamthanhtin1210@gmail.com`, same subject, body = the two curated sections +
-   OK/failed source counts (point to the repo file for the full list). Note: this
-   connector can only draft, not send.
-3. If neither path works, add a footer note `_Email skipped._` Never fail the run.
+```
+python scripts/send_discord.py --body-file state/_discord-body.md
+```
+
+The compact body should contain:
+- `# AI Daily Digest — YYYY-MM-DD`
+- the `🚀 Product & Breakthroughs` and `📄 Research Papers — Top Picks` sections,
+- `🗂 Full list: https://github.com/Tensh1210/daily_ai/blob/main/digests/digest-YYYY-MM-DD.md`,
+- `_Sources OK: N · Failed: M_` (list failed sources).
+
+Exit codes: `0` posted · `2` not configured (no `DISCORD_WEBHOOK_URL` env) · `1`
+failed. On `1`/`2`, add a footer note to the digest (`_Discord delivery skipped._`)
+and continue — never fail the run over delivery.
+
+> **Email (currently disabled, kept for later):** `scripts/send_email.py` (SMTP) and
+> the Gmail MCP `create_draft` fallback remain in the repo but are NOT called by this
+> routine. To re-enable email, add a `send_email.py` call here (see README).
 
 ## Step 8 — Persist
 Persistence keeps cross-day dedup working: today's `seen-ids.json` + digest MUST
