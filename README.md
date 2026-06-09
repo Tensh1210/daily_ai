@@ -89,13 +89,31 @@ Windows Task Scheduler triggers the headless `claude` CLI on this machine.
 
 ## Email delivery
 
-The routine drafts the digest email via the Gmail MCP `create_draft` tool.
+The routine sends the digest via **SMTP** (`scripts/send_email.py`, stdlib `smtplib`)
+for fully unattended delivery, and falls back to a **Gmail MCP draft** if SMTP is not
+configured (the Gmail connector can draft but not send).
 
-> ⚠️ The available Gmail MCP connector can **create drafts only — it cannot send**.
-> So the daily routine leaves a draft in your Gmail that you send manually. For
-> **fully unattended** delivery, add `scripts/send_email.py` using stdlib `smtplib`
-> with a Gmail app-password read from an env var (e.g. `DIGEST_SMTP_PASSWORD`,
-> gitignored) and call it from the routine instead of `create_draft`.
+Configure SMTP via environment variables (never committed):
+
+| Var | Default | Notes |
+|-----|---------|-------|
+| `DIGEST_SMTP_HOST` | `smtp.gmail.com` | |
+| `DIGEST_SMTP_PORT` | `587` | STARTTLS |
+| `DIGEST_SMTP_USER` | — | sender Gmail address |
+| `DIGEST_SMTP_PASSWORD` | — | Gmail **App password** (Google account → Security → App passwords; requires 2-Step Verification) |
+| `DIGEST_EMAIL_TO` | `phamthanhtin1210@gmail.com` | recipient |
+
+Test locally:
+```
+set DIGEST_SMTP_USER=you@gmail.com        # PowerShell: $env:DIGEST_SMTP_USER="you@gmail.com"
+set DIGEST_SMTP_PASSWORD=your-app-password
+python scripts/send_email.py --subject "AI Daily Digest — test" --body "hello"
+```
+
+**For the cloud routine:** add `DIGEST_SMTP_USER` + `DIGEST_SMTP_PASSWORD` as
+environment secrets in your Claude Code environment settings
+(https://claude.ai/code) so the cloud sandbox can read them. Without them the routine
+falls back to creating a Gmail draft.
 
 ## State & persistence
 
