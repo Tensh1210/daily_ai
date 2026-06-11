@@ -69,6 +69,8 @@ __pycache__
 # CK meta commands
 prompt.md
 ck.md
+release-manifest.json
+.repomixignore
 
 # Generated runtime layout for release/install smoke tests
 /.claude/
