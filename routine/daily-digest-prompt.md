@@ -95,12 +95,17 @@ messages — NOT the full found list, NOT the full per-item summaries). Build it
 python scripts/send_discord.py --body-file state/_discord-body.md
 ```
 
-Condensed body format (keep it tight — target < 3500 chars total):
+Condensed body format (keep it tight — target < 3500 chars total). Titles stay in
+English; the one-line blurb under each item is written in **Vietnamese** (prefix `🇻🇳`),
+translating the gist AND why it matters in a single concise sentence. Keep established
+technical terms in English (agent, tool-calling, fine-tune, benchmark, RAG, MCP...).
+The full English summaries live in the committed digest file.
 - `# AI Daily Digest — YYYY-MM-DD`
-- `## 🚀 Product & Breakthroughs` — each news item: `- **Title** — lab · <link>` then a
-  single short sentence.
+- `## 🚀 Product & Breakthroughs` — each news item: `- **Title** — lab · <link>` then
+  one short Vietnamese sentence (`🇻🇳 ...`).
 - `## 📄 Research — Top Picks` —
-  - the **top 6** picks: `- **Title** · <link>` + one short "why it matters" line;
+  - the **top 6** picks: `- **Title** · <link>` + one Vietnamese line (`🇻🇳 ...`) that
+    conveys what the paper does and why it matters;
   - the **remaining picks (7..top_n)**: title + link only, one line each, no summary.
 - `🗂 Full digest: https://github.com/Tensh1210/daily_ai/blob/main/digests/digest-YYYY-MM-DD.md`
 - `_Sources OK: N · Failed: M_` (list failed sources if any).
